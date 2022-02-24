@@ -32,6 +32,6 @@ if __name__ == '__main__':
             cur.execute("FETCH ALL c")
             for row in cur:
                 if row[1] == 1:
-                    ORG_ALERTS.labels(organization=row[2], alert_name=row[3]).set(1)
+                    ORG_ALERTS.labels(organization=row[3], alert_name=row[2]).set(1)
                 if row[1] == -1:
-                    ORG_ALERTS.labels(organization=row[2], alert_name=row[3]).set(0)
+                    ORG_ALERTS.labels(organization=row[3], alert_name=row[2]).set(0)
