@@ -1,0 +1,5 @@
+kafka-python==2.0.2
+schedule==1.1.0
+Faker==13.0.0
+numpy==1.22.2
+pandas==1.4.1

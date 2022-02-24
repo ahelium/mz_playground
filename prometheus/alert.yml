@@ -1,0 +1,6 @@
+groups:
+  - name: OrganizationMetrics
+    rules:
+      - alert: OrganiationAlert
+        expr: organization_alert{job="event_exporter"} == 1
+        for: 5m

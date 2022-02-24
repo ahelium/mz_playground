@@ -1,0 +1,79 @@
+version: '3.7'
+services:
+  producer:
+    build: ../producer/alert
+    container_name: producer
+    depends_on:
+      redpanda: { condition: service_healthy }
+  redpanda:
+    image: docker.vectorized.io/vectorized/redpanda:v21.11.3
+    container_name: redpanda
+    command:
+     - redpanda start
+     - --overprovisioned
+     - --smp 1
+     - --memory 1G
+     - --reserve-memory 0M
+     - --node-id 0
+     - --check=false
+     - --kafka-addr 0.0.0.0:9092
+     - --advertise-kafka-addr redpanda:9092
+     - --pandaproxy-addr 0.0.0.0:8082
+     - --advertise-pandaproxy-addr redpanda:8082
+     - --set redpanda.enable_transactions=true
+     - --set redpanda.enable_idempotence=true
+     - --set redpanda.auto_create_topics_enabled=true
+    ports:
+     - 9092:9092
+     - 8081:8081
+     - 8082:8082
+    healthcheck: { test: curl -f localhost:9644/v1/status/ready, interval: 1s, start_period: 30s }
+  materialized:
+    image: materialize/materialized:v0.20.0
+    container_name: materialized
+    command: -w1
+    ports:
+      - 6875:6875
+      # we do not yet support postgres init: https://github.com/MaterializeInc/materialize/issues/4738
+      # - ./materialize/init.sql:/docker-entrypoint-initdb.d/init.sql
+  mzcli:
+    image: materialize/cli
+    container_name: mzcli
+  setup:
+    image: materialize/cli
+    container_name: setup
+    depends_on:
+      - materialized
+    volumes:
+      - ../materialize:/materialize
+    entrypoint: /materialize/alert/setup.sh
+  consumer:
+    build: ../consumer/alert
+    container_name: consumer
+    depends_on:
+      - setup
+    ports:
+      - 80:80
+  prometheus:
+    image: prom/prometheus:v2.30.3
+    ports:
+      - 9090:9090
+    volumes:
+      - ../prometheus:/etc/prometheus
+      - prometheus-data:/prometheus
+    command: --web.enable-lifecycle  --config.file=/etc/prometheus/prometheus.yml
+  grafana:
+    image: grafana/grafana:7.5.7
+    ports:
+      - 3000:3000
+    restart: unless-stopped
+    volumes:
+      - ../grafana/config:/etc/grafana-config
+      - ../grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
+      - grafana-data:/var/lib/grafana
+    container_name: grafana
+volumes:
+  prometheus-data:
+  grafana-data:
+
+
