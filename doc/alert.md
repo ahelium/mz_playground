@@ -1,20 +1,20 @@
-##Alert
+## Alert
 
 Can we use Materialize to enable real time alerting on aggregated data?
 
 ---
 ### Producer
-Use the python Faker library to create fake event data. 
-Push an initial set of events to redpanda. Simulate a spike in deployments (every minute) for us to alert on!
+- Use the python Faker library to create fake event data. 
+- Push an initial set of events to redpanda. 
+- Simulate a spike in deployments (every minute) for us to alert on!
 ### Redpanda
-Accept our fake events
+- Accept our fake events
 ### Materialize
-Create a kafka source. 
-Do a little bit of data modeling to transform our events table into something we can peep aggregated data. 
+- Create a kafka source. 
+- Do a little bit of data modeling to transform our events table into something we can peep aggregated data. 
 In this case, we'll use [temporal filters](https://materialize.com/docs/guides/temporal-filters/#sliding-windows) 
 and some logic of the underlying data to create a dimension table to aggregate the number of deployments per organization. 
-
-[Optional]: Define a table to house only currently firing alerts. This makes our lives easier on the consumer side.
+- [Optional]: Define a table to house only currently firing alerts. This makes our lives easier on the consumer side.
 
 ```
 materialize=> select * from fct_customer_events limit 10;
@@ -44,11 +44,23 @@ materialize=> select * from organization_alert;
  deployment_spike | B
 ```
 ### Consumer
-TAIL the alerts table and create prometheus metrics from the results. Export those events for prometheus to scrape.
+- TAIL the alerts table and create prometheus metrics from the results. Export those events for prometheus to scrape.
 ### Prometheus
-Set up prometheus to scrape our exporter and send alerts to our alertmanager instance. Define a condition to alert on.
+- Set up prometheus to scrape our exporter and send alerts to our alertmanager instance. Define a condition to alert on.
+
+- what does this [look like](http://localhost:9090/graph?g0.expr=organization_alert%7Bjob%3D%22event_exporter%22%7D&g0.tab=0&g0.stacked=0&g0.show_exemplars=0&g0.range_input=1h)?
+
+![image](https://user-images.githubusercontent.com/8192401/155733430-d6fe0e8d-0c2a-49b6-b7ff-6c88e1fbd7d3.png)
+
 ### Alertmanager
-Define a route and receiver for alerts to be set to.
+- Define a route and receiver for alerts to be set to.
+- Alerts - what is [firing](http://localhost:9090/alerts)?  
+
+![image](https://user-images.githubusercontent.com/8192401/155733836-388ff14c-7fe4-4d34-8b16-deb6c69819c5.png)
+- Slack Alert: 
+
+![image](https://user-images.githubusercontent.com/8192401/156078275-d7349aee-abdd-48c4-a931-8a984cfbc902.png)
+
 ### Grafana (w/ or instead of alertmanager)
 Graph alert timeseries, send alerts from dashboard.
 
@@ -63,12 +75,6 @@ docker-compose -f alert.yml --build producer
 docker-compose -f alert.yml --build consumer
 docker-compose -f alert.yml up -d
 ```
-
-Prometheus - what does this [look like](http://localhost:9090/graph?g0.expr=organization_alert%7Bjob%3D%22event_exporter%22%7D&g0.tab=0&g0.stacked=0&g0.show_exemplars=0&g0.range_input=1h)?
-![image](https://user-images.githubusercontent.com/8192401/155733430-d6fe0e8d-0c2a-49b6-b7ff-6c88e1fbd7d3.png)
-
-Alerts - what is [firing](http://localhost:9090/alerts)?  
-![image](https://user-images.githubusercontent.com/8192401/155733836-388ff14c-7fe4-4d34-8b16-deb6c69819c5.png)
 
 TODO/Ideas
 - disclaimer: _this isnt exactly how prometheus is supposed to be used_ - our TAIL feature got me thinking and made me want to see what things might look like
