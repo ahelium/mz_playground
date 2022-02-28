@@ -44,12 +44,6 @@ select
        'deployment_spike' as alert_cond,
        organization as labels
 from dim_deployments
-where deployment_cnt > 2
-UNION
-select
-      'new_user' as alert_cond,
-      organization as labels
-from dim_deployments
-where customer_cnt > 1
+where deployment_cnt > 5
 EOF
 
