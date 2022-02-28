@@ -65,8 +65,10 @@ docker-compose -f alert.yml up -d
 ```
 
 Prometheus - what does this [look like](http://localhost:9090/graph?g0.expr=organization_alert%7Bjob%3D%22event_exporter%22%7D&g0.tab=0&g0.stacked=0&g0.show_exemplars=0&g0.range_input=1h)?
+![image](https://user-images.githubusercontent.com/8192401/155733430-d6fe0e8d-0c2a-49b6-b7ff-6c88e1fbd7d3.png)
 
 Alerts - what is [firing](http://localhost:9090/alerts)?  
+![image](https://user-images.githubusercontent.com/8192401/155733836-388ff14c-7fe4-4d34-8b16-deb6c69819c5.png)
 
 TODO/Ideas
 - disclaimer: _this isnt exactly how prometheus is supposed to be used_ - our TAIL feature got me thinking and made me want to see what things might look like
