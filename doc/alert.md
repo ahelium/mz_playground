@@ -1,44 +1,21 @@
+## Alert
+
 Can we use Materialize to enable real time alerting on aggregated data?
 
-#### Producer
-- Create fake event data
-- Push to kafka|redpanda!
-#### Redpanda
+---
+### Producer
+- Use the python Faker library to create fake event data. 
+- Push an initial set of events to redpanda. 
+- Simulate a spike in deployments (every minute) for us to alert on!
+### Redpanda
 - Accept our fake events
-#### Materialize
-- Kafka|Redpanda source
-- Event fct table 
-- Customer dim table
-- Alert table - sliding window using temporal filters: https://materialize.com/docs/guides/temporal-filters/#sliding-windows
-#### Consumer
-- TAIL materialize db 
-- Create prometheus metrics from events 
-- Export metrics
-#### Prometheus
-- Scrape our exported events
-#### Alertmanager
-- TODO: Alerts! 
+### Materialize
+- Create a kafka source. 
+- Do a little bit of data modeling to transform our events table into something we can peep aggregated data. 
+In this case, we'll use [temporal filters](https://materialize.com/docs/guides/temporal-filters/#sliding-windows) 
+and some logic of the underlying data to create a dimension table to aggregate the number of deployments per organization. 
+- [Optional]: Define a table to house only currently firing alerts. This makes our lives easier on the consumer side.
 
-TODO/Ideas
-- disclaimer: _this isnt exactly how prometheus is supposed to be used_ - our TAIL feature got me thinking and made me want to see what things might look like
-- materialize sink to file/stdout -> sinks https://vector.dev/docs/reference/configuration/sinks/ or https://docs.fluentbit.io/manual/concepts/data-pipeline/input (?)
-- materialize sink back to kafka | but why not just use ksql
-- use materialize observability image
-- deploy alertmanager container vs. use grafana alertmanger
-- push from prometheus instead of writing an exporter
-- avenue.so - direct connection, poll materialize on some cadence (TAIL support)
-
-
-Notes: 
-
-Compose:
-```
-docker-compose -f alert.yml --build producer
-docker-compose -f alert.yml --build consumer
-docker-compose -f alert.yml up -d
-```
-
-Materialize tables
 ```
 materialize=> select * from fct_customer_events limit 10;
  customer_id |  customer_name  | deployment_type |     event_type     | organization |  event_ts
@@ -66,10 +43,43 @@ materialize=> select * from organization_alert;
 ------------------+--------
  deployment_spike | B
 ```
+### Consumer
+- TAIL the alerts table and create prometheus metrics from the results. Export those events for prometheus to scrape.
+### Prometheus
+- Set up prometheus to scrape our exporter and send alerts to our alertmanager instance. Define a condition to alert on.
 
-Prometheus - what does this [look like](http://localhost:9090/graph?g0.expr=organization_alert%7Bjob%3D%22event_exporter%22%7D&g0.tab=0&g0.stacked=0&g0.show_exemplars=0&g0.range_input=1h)?
+- what does this [look like](http://localhost:9090/graph?g0.expr=organization_alert%7Bjob%3D%22event_exporter%22%7D&g0.tab=0&g0.stacked=0&g0.show_exemplars=0&g0.range_input=1h)?
 
 ![image](https://user-images.githubusercontent.com/8192401/155733430-d6fe0e8d-0c2a-49b6-b7ff-6c88e1fbd7d3.png)
 
-Alerts - what is [firing](http://localhost:9090/alerts)?  
+### Alertmanager
+- Define a route and receiver for alerts to be set to.
+- Alerts - what is [firing](http://localhost:9090/alerts)?  
+
 ![image](https://user-images.githubusercontent.com/8192401/155733836-388ff14c-7fe4-4d34-8b16-deb6c69819c5.png)
+- Slack Alert: 
+
+![image](https://user-images.githubusercontent.com/8192401/156078275-d7349aee-abdd-48c4-a931-8a984cfbc902.png)
+
+### Grafana (w/ or instead of alertmanager)
+Graph alert timeseries, send alerts from dashboard.
+
+---
+
+
+Notes:
+
+To Run:
+```
+docker-compose -f alert.yml --build producer
+docker-compose -f alert.yml --build consumer
+docker-compose -f alert.yml up -d
+```
+
+TODO/Ideas
+- disclaimer: _this isnt exactly how prometheus is supposed to be used_ - our TAIL feature got me thinking and made me want to see what things might look like
+- materialize sink to file/stdout -> sinks https://vector.dev/docs/reference/configuration/sinks/ or https://docs.fluentbit.io/manual/concepts/data-pipeline/input (?)
+- materialize sink back to kafka | but why not just use ksql
+- use materialize observability image
+- push from prometheus instead of writing an exporter
+- avenue.so - direct connection, poll materialize on some cadence (TAIL support)

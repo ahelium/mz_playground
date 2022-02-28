@@ -61,7 +61,16 @@ services:
     volumes:
       - ../prometheus:/etc/prometheus
       - prometheus-data:/prometheus
-    command: --web.enable-lifecycle  --config.file=/etc/prometheus/prometheus.yml
+    command: --web.enable-lifecycle  --config.file=/etc/prometheus/prometheus.yml  --web.external-url=http://alertmanager
+  alertmanager:
+    image: prom/alertmanager:v0.23.0
+    restart: unless-stopped
+    ports:
+      - 9093:9093
+    volumes:
+      - ../alertmanager:/config
+      - alertmanager-data:/data
+    command: --config.file=/config/alertmanager.yml --log.level=debug
   grafana:
     image: grafana/grafana:7.5.7
     ports:
@@ -75,5 +84,6 @@ services:
 volumes:
   prometheus-data:
   grafana-data:
+  alertmanager-data:
 
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import numpy as np
+import random
 import faker as F
-import sys
 import schedule
 import time
 import json
@@ -28,10 +28,14 @@ class Producer:
         self.topic = topic
         self.key = key
 
-    def run(self, data):
-        producer = KafkaProducer(bootstrap_servers='redpanda:9092')
+    def run(self, data, spike=False):
 
         dt = int(time.time())
+
+        producer = KafkaProducer(bootstrap_servers='redpanda:9092')
+
+        if spike:
+            data = [random.choice(data)] * 10
 
         for i in data:
             i['event_ts'] = dt
@@ -44,15 +48,16 @@ class Producer:
 
 
 def main():
-    num_customers = 5
-    customer_events = fake_events(num_customers)
+
+    customer_events = fake_events(10)
 
     p = Producer('customer_events', 'customer_id')
+
+    # push all of our existing events
     p.run(customer_events)
 
-    # push a random deployment event every 15 seconds
-    schedule.every(15).seconds.do(p.run,
-                                  [customer_events[np.random.choice([*range(0, num_customers, 1)])]])
+    # push two random deployment events every 15 seconds
+    schedule.every(90).seconds.do(p.run, customer_events, spike=True)
 
     while True:
         schedule.run_pending()

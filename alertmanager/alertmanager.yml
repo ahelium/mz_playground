@@ -1,0 +1,19 @@
+global:
+  resolve_timeout: 1m
+  slack_api_url: ''
+
+route:
+  group_by:
+    - alert_name
+  receiver: slack
+
+receivers:
+  - name: slack
+    slack_configs:
+      - send_resolved: false
+        channel: '#devex-toilet'
+        title: '{{ .GroupLabels.alert_name }}'
+        text: |-
+          {{ range .Alerts -}}
+          *Summary:* {{ .Annotations.summary }}
+          {{ end }}
