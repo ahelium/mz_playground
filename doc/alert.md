@@ -1,6 +1,27 @@
-## Alert
+## Materialize Powered Alerting
 
-Can we use Materialize to enable real time alerting on aggregated data?
+OR: The argument for using materialize in between a data warehouse or event stream and an alerting system. 
+
+
+There are tons of great options out there we can use to observe what our systems are up to. 
+Grafana, DataDog, NewRelic, and others all take care of ingesting time series data and providing an interactive way to structure it for alerting.
+There also already exist a number of great ways to alert off of in app event triggers - segment.io, customer.io. and others. 
+These platforms out of the box integrate with our favorite alert mechanisms: Slack, PagerDuty, Email etc. 
+
+Materialize is uniquely suited to solve an additional class of alerting problems. 
+It can be used to define views on the database layer that:
+- aggregate information
+- join information from multiple data sources
+
+We can then listen to how these views have _changed_ using Materializes TAIL feature, and either: 
+- create time-series data from those changes, to be consumed by our observability friends
+- [future work] [TODO: Research] integrate directly with the alert mechanisms themselves
+
+The following setup demonstrates the first use case. We create a bunch of fake event data, in this case, 'deployment' events. 
+We aggregate these to the customer level using a Materialized view and some nice time window functionality. 
+A little helper (exporter) listens for changes to this view, consumes the change events in real time, and turns them into prometheus metrics. 
+We hook up prometheus to scrape those metrics and define our alerts. We can then use alertmanager to route those alerts
+either directly or from within grafana.
 
 ---
 ### Producer
@@ -83,3 +104,4 @@ TODO/Ideas
 - use materialize observability image
 - push from prometheus instead of writing an exporter
 - avenue.so - direct connection, poll materialize on some cadence (TAIL support)
+- This could be a REALLY NEAT HACK DAY! Could we provide our community slack api key so folks could develop alerts? 
