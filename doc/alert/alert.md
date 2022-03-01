@@ -82,8 +82,27 @@ materialize=> select * from organization_alert;
 
 ![image](https://user-images.githubusercontent.com/8192401/156078275-d7349aee-abdd-48c4-a931-8a984cfbc902.png)
 
+- NOTE: trying this demo out? You'll need a slack API key to include with your alertmanager [`config`](../../alertmanager/alertmanager.yml). 
+- NOTE: we default to use #devex-toilet for alerting. Update if need be. 
 ### Grafana (w/ or instead of alertmanager)
 Graph alert timeseries, send alerts from dashboard.
+
+- NOTE: sign into grafana using username: admin, password: admin. 
+- The prometheus datasource will already be configured for you. 
+![image](https://user-images.githubusercontent.com/8192401/156211297-55402105-ecdd-4958-b8f7-d458e5f6dc48.png)
+
+Interact with our datasource like so: 
+![image](https://user-images.githubusercontent.com/8192401/156232107-178770ec-743f-4b9b-bb57-7648301fd58d.png)
+
+Set up the alerting destination, using the same API key you grabbed for alertmanager: 
+![image](https://user-images.githubusercontent.com/8192401/156214036-7af3fedf-63a5-4d22-b768-ea45c86e9617.png)
+
+And define alerts: 
+![image](https://user-images.githubusercontent.com/8192401/156232311-8176b2ab-a917-4697-8aad-7f39a31a2693.png)
+
+And voila! We see the same alerts, coming directly from grafana: 
+
+![image](https://user-images.githubusercontent.com/8192401/156235289-66e3627c-3ad0-4a85-8ade-a0d66a70dbe7.png)
 
 ---
 
@@ -91,11 +110,16 @@ Graph alert timeseries, send alerts from dashboard.
 Notes:
 
 To Run:
+
+Build first if developing the consumer/producer
 ```
 docker-compose -f alert.yml --build producer
 docker-compose -f alert.yml --build consumer
 docker-compose -f alert.yml up -d
 ```
+We use volumes for alertmanager, grafana, and prometheus. 
+Run `docker prune containers` and/or `docker prune volumes` to wipe the data. 
+
 
 TODO/Ideas
 - disclaimer: _this isnt exactly how prometheus is supposed to be used_ - our TAIL feature got me thinking and made me want to see what things might look like
@@ -105,3 +129,5 @@ TODO/Ideas
 - push from prometheus instead of writing an exporter
 - avenue.so - direct connection, poll materialize on some cadence (TAIL support)
 - This could be a REALLY NEAT HACK DAY! Could we provide our community slack api key so folks could develop alerts? 
+
+Competitive Research: 
