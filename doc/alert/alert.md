@@ -89,6 +89,15 @@ Graph alert timeseries, send alerts from dashboard.
 
 - NOTE: sign into grafana using username: admin, password: admin. 
 - The prometheus datasource will already be configured for you. 
+![image](https://user-images.githubusercontent.com/8192401/156211297-55402105-ecdd-4958-b8f7-d458e5f6dc48.png)
+
+Interact with our datasource like so: 
+![image](https://user-images.githubusercontent.com/8192401/156211719-f6d7dc53-8e93-4508-b2f1-2db2f01e6ac9.png)
+
+And define alerts: 
+![image](https://user-images.githubusercontent.com/8192401/156211602-b798b19d-0c22-44b6-a241-a9ea25aa459d.png)
+
+
 
 ---
 
