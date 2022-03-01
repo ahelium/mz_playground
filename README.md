@@ -11,7 +11,7 @@ Just the one use case, for now. :)
 ## Use Cases
 
 ---
-### [`alert`](doc/alert.md)
+### [`alert`](doc/alert/alert.md)
 Use materialize as the backend for sending alerts, in real time, based off of aggregated data sources.
 
 ## Future Work

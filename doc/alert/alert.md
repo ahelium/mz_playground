@@ -105,3 +105,5 @@ TODO/Ideas
 - push from prometheus instead of writing an exporter
 - avenue.so - direct connection, poll materialize on some cadence (TAIL support)
 - This could be a REALLY NEAT HACK DAY! Could we provide our community slack api key so folks could develop alerts? 
+
+Competitive Research: 
