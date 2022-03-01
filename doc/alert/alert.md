@@ -100,7 +100,9 @@ Set up the alerting destination, using the same API key you grabbed for alertman
 And define alerts: 
 ![image](https://user-images.githubusercontent.com/8192401/156232311-8176b2ab-a917-4697-8aad-7f39a31a2693.png)
 
+And voila! We see the same alerts, coming directly from grafana: 
 
+![image](https://user-images.githubusercontent.com/8192401/156235289-66e3627c-3ad0-4a85-8ade-a0d66a70dbe7.png)
 
 ---
 
