@@ -82,8 +82,13 @@ materialize=> select * from organization_alert;
 
 ![image](https://user-images.githubusercontent.com/8192401/156078275-d7349aee-abdd-48c4-a931-8a984cfbc902.png)
 
+- NOTE: trying this demo out? You'll need a slack API key to include with your alertmanager [`config`](../../alertmanager/alertmanager.yml). 
+- NOTE: we default to use #devex-toilet for alerting. Update if need be. 
 ### Grafana (w/ or instead of alertmanager)
 Graph alert timeseries, send alerts from dashboard.
+
+- NOTE: sign into grafana using username: admin, password: admin. 
+- The prometheus datasource will already be configured for you. 
 
 ---
 
@@ -91,11 +96,16 @@ Graph alert timeseries, send alerts from dashboard.
 Notes:
 
 To Run:
+
+Build first if developing the consumer/producer
 ```
 docker-compose -f alert.yml --build producer
 docker-compose -f alert.yml --build consumer
 docker-compose -f alert.yml up -d
 ```
+We use volumes for alertmanager, grafana, and prometheus. 
+Run `docker prune containers` and/or `docker prune volumes` to wipe the data. 
+
 
 TODO/Ideas
 - disclaimer: _this isnt exactly how prometheus is supposed to be used_ - our TAIL feature got me thinking and made me want to see what things might look like
