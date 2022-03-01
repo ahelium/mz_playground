@@ -92,13 +92,13 @@ Graph alert timeseries, send alerts from dashboard.
 ![image](https://user-images.githubusercontent.com/8192401/156211297-55402105-ecdd-4958-b8f7-d458e5f6dc48.png)
 
 Interact with our datasource like so: 
-![image](https://user-images.githubusercontent.com/8192401/156211719-f6d7dc53-8e93-4508-b2f1-2db2f01e6ac9.png)
+![image](https://user-images.githubusercontent.com/8192401/156232107-178770ec-743f-4b9b-bb57-7648301fd58d.png)
 
 Set up the alerting destination, using the same API key you grabbed for alertmanager: 
 ![image](https://user-images.githubusercontent.com/8192401/156214036-7af3fedf-63a5-4d22-b768-ea45c86e9617.png)
 
 And define alerts: 
-![image](https://user-images.githubusercontent.com/8192401/156211602-b798b19d-0c22-44b6-a241-a9ea25aa459d.png)
+![image](https://user-images.githubusercontent.com/8192401/156232311-8176b2ab-a917-4697-8aad-7f39a31a2693.png)
 
 
 
